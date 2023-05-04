@@ -6,8 +6,12 @@ var logger = require("morgan");
 
 //1.引入路由
 const usersRouter = require("./routes/users");
-const arrticlesRouter = require("./routes/blogs")
-const db = require('./db/connect');
+const arrticlesRouter = require("./routes/blogs");
+const classifiesRouter = require("./routes/classifies");
+const db = require("./db/connect");
+const photoRouter = require("./routes/photo");
+const synthesisRouter = require("./routes/synthesis");
+
 //2.处理跨域问题
 
 var app = express();
@@ -24,7 +28,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // 注册路由(接收客户端发来的地址请求)
 app.use("/api/users", usersRouter);
-app.use("/api/blogs",arrticlesRouter)
+app.use("/api/blogs", arrticlesRouter);
+app.use("/api/classifies", classifiesRouter);
+app.use("/api/photo", photoRouter);
+app.use("/api/synthesis", synthesisRouter);
 
 // catch 404 and forward to error handler
 //捕获404错误，并调用错误处理程序

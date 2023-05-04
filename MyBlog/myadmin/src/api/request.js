@@ -1,5 +1,4 @@
 import axios from "axios";
-// import store from "../store";
 
 // 二次封装axios
 const requests = axios.create({
@@ -9,28 +8,6 @@ const requests = axios.create({
   timeout: 5000,
 });
 
-// // 请求拦截器：在请求发出去之前做处理
-// requests.interceptors.request.use(
-// 	config => {
-// 		// config:配置对象，对象信息里边有一个重要信息，请求头headers
-// 		// nprogress.start();
-// 		// // 需要携带token带给服务器
-// 		if (store.state.user.token || localStorage.getItem("TOKEN")) {
-// 			config.headers.token = store.state.user.token;
-// 		}
-// 		return config;
-// 	},
-// 	error => {
-// 		//请求错误时
-// 		console.log("request:", error);
-// 		// 1.判断请求超时
-// 		if (error.code === "ECONNABORTED" && error.message.indexOf("timeout") !== -1) {
-// 			console.log("timeout请求超时");
-// 			// return service.request(originalRequest); // 再重复请求一次
-// 		}
-// 		return Promise.reject(error);
-// 	}
-// );
 // 添加请求拦截器
 requests.interceptors.request.use(
   function (config) {
@@ -48,7 +25,7 @@ requests.interceptors.response.use(
   (res) => {
     // 进度条结束
     // nprogress.done();
-    console.log("res.data", res.data);
+    // console.log("res.data", res.data);
     return res
   },
   (err) => {

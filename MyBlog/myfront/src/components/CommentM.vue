@@ -21,7 +21,9 @@
       >
       </el-input>
       <!-- 留言按钮 -->
-      <el-button type="primary">评论</el-button>
+      <el-button type="primary" @click="submitInfo(keyId, undefined)"
+        >评论</el-button
+      >
     </el-card>
     <!-- 评论展示 -->
     <div class="comment-body">
@@ -74,8 +76,8 @@
         </div>
         <!-- 留言样式（默认隐藏，点击留言显示，占用二级评论的bfc模块） -->
         <div class="liuyan" v-show="false">
-            <el-input placeholder="请输入你的留言"></el-input>
-            <el-button type="primary">回复</el-button>
+          <el-input placeholder="请输入你的留言"></el-input>
+          <el-button type="primary">回复</el-button>
         </div>
       </div>
     </div>
@@ -87,10 +89,54 @@
 <script>
 import header_img from "../assets/img/nightBg.jpg";
 export default {
+  props: {
+    keyId: {
+      type: String,
+    },
+  },
   data() {
     return {
       headerimg: header_img,
+      username: "",
     };
+  },
+  methods: {
+    submitInfo(id, replyName) {
+      if (!this.username) {
+        this.$prompt("请输入你的名字", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+        })
+          .then((username) => {
+            if (!username.value) {
+              throw new Error();
+            }
+            this.$api
+              .addMurmur({
+                murmur: this.murmur,
+                username: username.value,
+              })
+              .then((res) => {
+                this.addComment(id, replyName);
+                this.username = res.data.username;
+              });
+          })
+          .catch((err) => {
+            if (err == "cancel") {
+              this.$message({
+                type: "info",
+                message: "取消输入",
+              });
+            } else {
+              this.$message.warning({
+                message: "名字不能为空哦！",
+              });
+            }
+          });
+      } else {
+        this.addComment(id, replyName);
+      }
+    },
   },
 };
 </script>

@@ -15,6 +15,11 @@ export const routes = [
         component: () => import("../view/articleA.vue"),
       },
       {
+        path: "result",
+        name: "result",
+        component: () => import("../view/result.vue"),
+      },
+      {
         path: "editE",
         name: "editE",
         component: () => import("../view/editE.vue"),

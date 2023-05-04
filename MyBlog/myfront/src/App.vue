@@ -23,6 +23,7 @@ import SliderShow from "./components/SlideShow.vue";
 import SiderInfo from "./components/SiderInfo.vue";
 
 import { mapGetters, mapState } from "vuex";
+import { createFingerprint } from "../src/utils/index.js";
 
 export default {
   name: "App",
@@ -42,6 +43,12 @@ export default {
       isLight: (state) => state.theme.isLight,
     }),
     ...mapGetters(["color", "infoBgColor", "mainBg"]),
+  },
+    created() {
+    // 取本机主指纹操作
+    if (!localStorage.getItem("browserId")) {
+      createFingerprint();
+    }
   },
 };
 </script>

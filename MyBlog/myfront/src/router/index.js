@@ -4,6 +4,10 @@ import Vue from "vue";
 Vue.use(VueRouter);
 
 const routes = [
+  // {
+  //   path:"/",
+  //   redirect:"/list/blog"
+  // },
   {
     path: "/list/:type",
     component: () => import("@/views/ListL.vue"),
