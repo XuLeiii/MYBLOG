@@ -21,7 +21,7 @@
         <i class="el-icon-medal" style="margin-right: 10px"></i>最新博客
       </div>
       <div class="card-item" v-for="item in blogList" :key="item._id">
-        <span>{{ item.title }}</span> <span>{{ item.date.substr(2) }}</span>
+        <span>{{ item.title }}</span> <span>{{ item.date }}</span>
       </div>
       <!-- <el-empty description="你猜为什么没有？" :image-size="50"></el-empty> -->
     </el-card>

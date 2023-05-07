@@ -114,7 +114,7 @@ const getBlog = async (req, res) => {
   // 这里必须要await
   const blog = await BlogsModel.getBlog(_id);
   // console.log("blog", blog);
-  blog.date = util.formatDate(blog.date);
+  blog.date = util.formatTime(blog.date);
   // console.log("blog", blog);
   blog._id = blog._id.toString();
   const classify = await ClassifyModel.getClassify(blog.classification);

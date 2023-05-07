@@ -39,7 +39,26 @@ exports.formatDate = (dateNum) => {
     (day < 10 ? "0" + day : day)
   );
 };
-
+//?????????????
+exports.formatTime = (timeNum) => {
+  const date = new Date(timeNum);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  return (
+    year +
+    "-" +
+    (month < 10 ? "0" + month : month) +
+    "-" +
+    (day < 10 ? "0" + day : day) +
+    " " +
+    (hour < 10 ? "0" + hour : hour) +
+    ":" +
+    (minutes < 10 ? "0" + minutes : minutes)
+  );
+};
 exports.imgBaseUrl = (type) => {
   switch (type) {
     case "avatar":
@@ -101,4 +120,76 @@ exports.manangeDataBoard = (blogs) => {
       }
     });
   return { blogsOf7 };
+};
+
+//根据返回的全部一二级评论，和所有指纹信息,去生成对应的数据结构，
+//方便前端处理数据，展示在一二级评论上
+// murmurInfos [
+//   {
+//     _id: new ObjectId("6453ac94f6ea80d71c5432c1"),
+//     date: 2023-05-04T13:01:08.354Z,
+//     username: '许磊',
+//     murmur: '726ed2c07a20237539eb4be13f795e37',
+//     __v: 0
+//   }
+// ]
+// comments [
+//   {
+//     _id: new ObjectId("6453ac94f6ea80d71c5432c3"),
+//     date: '2023-05-04',
+//     keyId: '6450e05e1f7946b0816dba02',
+//     favour: [],
+//     content: '一级评论',
+//     murmur: '726ed2c07a20237539eb4be13f795e37',
+//     __v: 0,
+//     username: '许磊',
+//     avatarUrl: undefined
+//   }
+// ]
+// comments [
+//   {
+//     _id: new ObjectId("6453ac94f6ea80d71c5432c3"),
+//     date: '2023-05-04',
+//     keyId: '6450e05e1f7946b0816dba02',
+//     favour: [],
+//     content: '一级评论',
+//     murmur: '726ed2c07a20237539eb4be13f795e37',
+//     __v: 0,
+//     username: '许磊',
+//     avatarUrl: undefined
+//   }
+// ]
+exports.manageMurmurComments = (murmurInfo, comments) => {
+  const hashMurmur = new Map();
+  murmurInfo?.forEach((item) => {
+    hashMurmur.set(item.murmur, item);
+    // console.log("hashMurmur", hashMurmur);
+    // hashMurmur Map(1) {
+    //   '726ed2c07a20237539eb4be13f795e37' => {
+    //     _id: new ObjectId("6453ac94f6ea80d71c5432c1"),
+    //     date: 2023-05-04T13:01:08.354Z,
+    //     username: '许磊',
+    //     murmur: '726ed2c07a20237539eb4be13f795e37',
+    //     __v: 0
+    //   }
+    // }
+  });
+  return depComments(hashMurmur, comments);
+};
+const depComments = (hashMurmur, comments, fatherId) => {
+  comments?.forEach((item) => {
+    const murValue = hashMurmur.get(item.murmur);
+    item.date = this.formatDate(item.date);
+    item.username = murValue.username;
+    item.avatarUrl = murValue.avatarUrl;
+    if (fatherId) {
+      item.fatherId = fatherId;
+    }
+    if (item.replyInfo?.length > 0) {
+      item.children = item.replyInfo;
+      depComments(hashMurmur, item.replyInfo, item._id);
+    }
+    delete item.replyInfo;
+  });
+  return comments;
 };

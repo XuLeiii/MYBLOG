@@ -11,6 +11,8 @@ const classifiesRouter = require("./routes/classifies");
 const db = require("./db/connect");
 const photoRouter = require("./routes/photo");
 const synthesisRouter = require("./routes/synthesis");
+const murmurRouter = require("./routes/murmur");
+const commentRouter = require("./routes/comments");
 
 //2.处理跨域问题
 
@@ -32,6 +34,8 @@ app.use("/api/blogs", arrticlesRouter);
 app.use("/api/classifies", classifiesRouter);
 app.use("/api/photo", photoRouter);
 app.use("/api/synthesis", synthesisRouter);
+app.use("/api/murmur", murmurRouter);
+app.use("/api/comments", commentRouter);
 
 // catch 404 and forward to error handler
 //捕获404错误，并调用错误处理程序
