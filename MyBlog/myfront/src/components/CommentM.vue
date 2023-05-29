@@ -47,19 +47,31 @@
             <h4>{{ item.username }}</h4>
             <p>{{ item.date }}</p>
             <div class="content">
-              {{ item.content }}
+              {{ item.reply }}
             </div>
           </div>
         </div>
         <div class="firstComment-right">
-          <i class="iconfont icon-icon">0</i>
+          <i
+            class="el-icon-lollipop"
+            @click="giveALike(item, item._id)"
+            style="cursor: pointer"
+            :class="item.favour.includes(murmur) ? 'active' : ''"
+            >{{ item.favour.length || 0 }}</i
+          >
           <i
             class="el-icon-chat-dot-round"
             @click="isShowSecReply(item._id)"
             style="cursor: pointer"
             >回复</i
           >
-          <i class="el-icon-delete">删除</i>
+          <i
+            class="el-icon-delete"
+            @click="deleteComment(item._id, undefined)"
+            v-if="murmur === item.murmur"
+            style="cursor: pointer"
+            >删除</i
+          >
         </div>
       </div>
       <!-- 回复一级评论框 -->
@@ -97,23 +109,35 @@
         <div class="secondComment-body">
           <h4>{{ reply.username }}</h4>
           <p>{{ reply.date }}</p>
-          <span class="to_reply">{{ reply.username }} 回复</span>
+          <!-- <span class="to_reply">{{ reply.username }} 回复</span>
 
           <span class="to_reply"> {{ reply.replyName }}</span
-          >:
+          > -->
           <div class="content">
             {{ reply.reply }}
           </div>
         </div>
         <div class="secondComment-right">
-          <i class="iconfont icon-icon">0</i>
+          <i
+            class="el-icon-lollipop"
+            @click="giveALike(reply, item._id)"
+            style="cursor: pointer"
+            :class="reply.favour.includes(murmur) ? 'active' : ''"
+          ></i
+          >{{ reply.favour ? reply.favour.length : 0 }}
           <i
             class="el-icon-chat-dot-round"
             @click="isShowSecReply(reply._id)"
             style="cursor: pointer"
             >回复</i
           >
-          <i class="el-icon-delete">删除</i>
+          <i
+            class="el-icon-delete"
+            @click="deleteComment(item._id, reply._id)"
+            style="cursor: pointer"
+            v-if="murmur === item.murmur"
+            >删除</i
+          >
         </div>
         <div class="secondereply-comment" v-show="isShowSec === reply._id">
           <el-input
@@ -148,6 +172,10 @@ import {
   addfirstcomment,
   getCommentsOfArticle,
   addsecondcomment,
+  addsecondfavour,
+  addfirstfavour,
+  deletesecondcomment,
+  deletefirstcomment,
 } from "../api/api.js";
 import header_img from "../assets/img/nightBg.jpg";
 export default {
@@ -235,7 +263,7 @@ export default {
         }
         res = await addfirstcomment({
           keyId: id,
-          content: this.context,
+          reply: this.context,
           murmur: this.murmur,
           articleTitle: this.articleTitle,
         });
@@ -261,7 +289,7 @@ export default {
           // console.log("comment.replyInfo", comment.replyInfo);
           this.replyContext = "";
         } else {
-          this.comments.push(res.data.content);
+          this.comments.push(res.data.reply);
           this.context = "";
         }
       } else {
@@ -307,6 +335,78 @@ export default {
         // this.replyName = name;
       } else {
         this.isShowSec = this.isClickId = "";
+      }
+    },
+    // 评论点赞
+    giveALike(item, _id) {
+      try {
+        let res = null;
+        if (item.favour?.includes(this.murmur)) {
+          this.$message.info("您已经点过赞啦！");
+          return;
+        }
+        if (item.replyName) {
+          addsecondfavour({
+            replyId: item._id,
+            _id,
+            favourMurmur: this.murmur,
+          })
+            .then((res) => {
+              this.$message.success(res.msg);
+              item.favour.push(this.murmur);
+            })
+            .catch(() => {
+              this.$message.error(res.msg);
+            });
+        } else {
+          addfirstfavour({
+            _id,
+            favourMurmur: this.murmur,
+          })
+            .then((res) => {
+              this.$message.success(res.msg);
+              item.favour.push(this.murmur);
+            })
+            .catch(() => {
+              this.$message.error(res.msg);
+            });
+        }
+      } catch (err) {
+        this.$message.error(err);
+      }
+    },
+    deleteComment(_id, replyId) {
+      let res = null;
+      if (replyId) {
+        res = deletesecondcomment({ replyId, _id })
+          .then((res) => {
+            this.$message.success(res.msg);
+            const temp = this.comments.find(
+              (item) => item._id == _id
+            ).replyInfo;
+            for (let i = 0; i < temp.length; i++) {
+              if (temp[i]._id == replyId) {
+                temp.splice(i, 1);
+                break;
+              }
+            }
+          })
+          .catch(() => {
+            this.$message.error(res.msg);
+          });
+      } else {
+        res = deletefirstcomment({ _id })
+          .then((res) => {
+            this.$message.success(res.msg);
+            for (let i = 0; i < this.comments.length; i++) {
+              if (this.comments[i]._id == _id) {
+                this.comments.splice(i, 1);
+              }
+            }
+          })
+          .catch(() => {
+            this.$message.error(res.msg);
+          });
       }
     },
   },
@@ -381,7 +481,7 @@ export default {
       justify-content: space-between;
     }
     .secondComment-body {
-      width: 67%;
+      width: 60%;
       margin-left: 10px;
       p {
         font-size: 10px;
@@ -410,5 +510,8 @@ export default {
       color: rgb(126, 127, 128);
     }
   }
+}
+.active {
+  color: rgb(255, 8, 0);
 }
 </style>

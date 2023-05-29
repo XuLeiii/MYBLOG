@@ -2,21 +2,10 @@
   <div class="box">
     <div class="main-login" :style="{ height: islogin ? '380px' : '550px' }">
       <!-- 1.两种样式 -->
-      <div :class="islogin ? 'login-box' : 'register-box'">
+      <div class="login-box">
         <!-- 1.1表格信息 -->
-        <h2 @click="change(true)">登录 |</h2>
-        <h2 @click="change(false)">注册</h2>
-        <div class="item" v-show="!islogin">
-          <span>用户名</span>
-          <input
-            type="text"
-            v-model="username"
-            @blur="verifyTrue('username', 'errUsername')"
-          />
-          <div class="err-msg" v-show="errUsername">
-            <i class="el-icon-info">用户名不能为空</i>
-          </div>
-        </div>
+        <h2 @click="change(true)">登录</h2>
+
         <div class="item">
           <span>电子邮箱</span>
           <input
@@ -39,20 +28,8 @@
             <i class="el-icon-info">密码不符合要求</i>
           </div>
         </div>
-        <div class="item" v-show="!islogin">
-          <span>再次确认密码</span>
-          <input
-            type="password"
-            v-model="rePassword"
-            @blur="verifyTrue('rePassword', 'errRepassword')"
-          />
-          <div class="err-msg" v-show="errRepassword">
-            <i class="el-icon-info">两次密码不一致</i>
-          </div>
-        </div>
         <!-- 1.2登录注册按钮 -->
         <el-button v-show="islogin" @click="login()">登录</el-button>
-        <el-button v-show="!islogin" @click="register()">注册</el-button>
       </div>
     </div>
   </div>
@@ -77,23 +54,26 @@ export default {
     //点击登录按钮时触发，通过判断errmail等的布尔值决定是否去向后端发送登录事件
     async login() {
       try {
-         let result = null;
+        let result = null;
         if (!this.errEmail && !this.errPassword) {
           //通过vuex向后端发送axios请求，获取后端响应数据
+          console.log(1);
           result = await this.$store.dispatch("login", {
             email: this.email,
             password: this.password,
           });
+          console.log(result);
+          console.log(2);
         } else {
           this.$message.error("请检查是否所有信息都正确填写！");
           return;
         }
         //处理后端响应的数据
-        if (result.status === 200) {
-          this.$message.success(result.msg);
-          this.$router.push("/home");
+        if (result.data.status === 200) {
+          this.$message.success(result.data.msg);
+          this.$router.push("/home/article");
         } else {
-          this.$message.error(result.msg);
+          this.$message.error(result.data.msg);
           return;
         }
       } catch (error) {

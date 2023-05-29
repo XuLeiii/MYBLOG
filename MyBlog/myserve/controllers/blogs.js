@@ -69,7 +69,7 @@ const updateBlog = async (req, res) => {
     });
   }
 };
-//获取博客列表
+//获取博客列表，后台管理界面用的。
 const getBlogs = async (req, res) => {
   const blogs = await BlogsModel.getBlogs();
   // console.log("blog", blogs);
@@ -88,7 +88,7 @@ const getBlogs = async (req, res) => {
   }
 };
 
-// 获取已发布博客列表
+// 获取已发布博客列表，前台展示用的。
 const getPublishBlogs = async (req, res) => {
   // console.log("123123");
   const { pageStart, pageSize } = req.query;
@@ -135,9 +135,9 @@ const getBlog = async (req, res) => {
 };
 //增加点赞
 const addFavour = async (req, res) => {
-  const { _id } = req.query;
+  const { _id, favourMurmur } = req.query;
   // 增加点赞数
-  const addFavour = await BlogsModel.addFavour(_id, 1);
+  const addFavour = await BlogsModel.addFavour(_id, favourMurmur);
   // console.log("addfavour", addFavour);
   const getFavour = await BlogsModel.getFavour(_id);
   // console.log("getFavour", getFavour);

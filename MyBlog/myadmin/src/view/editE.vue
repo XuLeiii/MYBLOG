@@ -9,7 +9,7 @@
       xssOptions
     />
     <button @click="dialogVisible = true" class="sub">保存</button>
-    <el-dialog title="发布文章" :visible.sync="dialogVisible" :center="true">
+    <el-dialog title="提交博客" :visible.sync="dialogVisible" :center="true">
       <!-- 1.center控制对话框的标题和底部的居中2.对话框的叉号事件-->
       <!-- 1.model指定收集表单中输入的数据到article对象变量中，双向数据绑定
          2.rules控制表单校验规则
@@ -42,10 +42,9 @@
         <el-form-item label="简介" label-width="120px" prop="digest">
           <el-input v-model="article.digest"></el-input>
         </el-form-item>
-        <el-form-item label="是否发布" label-width="150px">
-          <!-- 1.switch开关标签 -->
+        <!-- <el-form-item label="是否发布" label-width="150px">
           <el-switch v-model="article.state" active-text="发布"> </el-switch>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <!-- 确定 取消 重置 按钮 -->
       <div slot="footer" class="dialog-footer">

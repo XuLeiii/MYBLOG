@@ -40,7 +40,7 @@ const updateMurmurUsername = async (req, res, next) => {
 };
 //查询所有用户信息
 const getMurmurInfos = async (req, res, next) => {
-  let result = await MurmruModel.getMurmurInfos();
+  let result =  MurmruModel.getMurmurInfos();
   result.forEach((item) => (item.date = util.formatTime(item.date)));
   if (result) {
     res.send({

@@ -14,12 +14,17 @@
         <p>{{ item.digest }}</p>
       </div>
       <div class="footer">
-        <div class="lfooter">
-          <i class="el-icon-view">123</i>
-          <i class="iconfont icon-rili"> sdsad</i>
+        <div class="lfooter" style="font-size: 14px; margin-top: 10px">
+          <i
+            class="el-icon-lollipop"
+            :class="item.favour.includes(murmur) ? 'active' : ''"
+          >
+            {{ item.favour.length }}</i
+          >
+          <i class="el-icon-view"> {{ item.browse }}</i>
         </div>
         <div class="rfooter">
-          <i>日期:{{ item.date }}</i>
+          <i>{{ item.date }}</i>
         </div>
       </div>
     </el-card>
@@ -31,7 +36,7 @@
 </template>
 
 <script>
-import { getPublishBlogs, getBlogsOfClassify } from "../api/api.js";
+import { getPublishBlogs, getBlogsOfClassify, search } from "../api/api.js";
 export default {
   data() {
     return {
@@ -43,6 +48,7 @@ export default {
       pageSize: 5,
       dataList: [],
       tipText: "博客",
+      murmur: localStorage.getItem("browserId"),
     };
   },
   methods: {
@@ -50,6 +56,7 @@ export default {
       console.log("1", id);
       this.$router.push({ path: "/article", query: { id: id } });
     },
+
     // 获取博客列表数据
     async getDatas(pageStart, pageSize) {
       try {
@@ -65,7 +72,7 @@ export default {
         } else if (searchValue) {
           this.tipText = "搜索结果";
           // 发送axios请求,携带查询的关键字(字符串)，接收后台返回的数据(数组对象)
-          res = await this.$api.search({ searchValue });
+          res = await search({ searchValue });
         } else {
           this.tipText = "博客";
           res = await getPublishBlogs({ pageStart, pageSize });
@@ -76,6 +83,7 @@ export default {
           this.dataList = res.data.dataList || [];
           this.count = res.data.count;
         } else {
+          this.dataList = [];
           this.$message.error(res.msg);
         }
       } catch (err) {
@@ -85,6 +93,11 @@ export default {
   },
   mounted() {
     this.getDatas(this.pageStart, this.pageSize);
+  },
+  watch: {
+    $route() {
+      this.getDatas(0, this.pageSize);
+    },
   },
 };
 </script>
@@ -122,6 +135,9 @@ export default {
           }
         }
       }
+    }
+    .active {
+      color: rgb(202, 4, 4);
     }
   }
 }

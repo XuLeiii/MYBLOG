@@ -4,12 +4,12 @@ const util = require("../utils/index.js");
 // 添加新一级评论
 const addFirstComment = async (req, res, next) => {
   // 获取时间字符串
-  const { keyId, articleTitle, content, murmur, replyInfo = [] } = req.body;
+  const { keyId, articleTitle, reply, murmur, replyInfo = [] } = req.body;
   const result = await CommentModel.addFirstComment({
     date: Date.now(),
     keyId,
     // username,
-    content,
+    reply,
     murmur,
     replyInfo,
     articleTitle,
@@ -137,13 +137,13 @@ const getCommentsOfArticle = async (req, res) => {
     pageSize,
     pageStart
   );
-  console.log("comments", comments);
+  // console.log("comments222222222222222", comments);
   //获取所有的指纹信息
   const murmurInfos = await MurmruModel.getMurmurInfos();
-  console.log("murmurInfos", murmurInfos);
+  // console.log("murmurInfos11111111111111111111111", murmurInfos);
   //获取指定指纹的信息
   const user = await MurmruModel.getMurmurInfo(murmur);
-  console.log("user", user);
+  // console.log("user3333333333333333", user);
   //根据返回的全部一二级评论，和所有指纹信息,去生成对应的数据结构，方便前端处理数据，展示在一二级评论上
   comments = util.manageMurmurComments(murmurInfos, comments);
   console.log("comments", comments);

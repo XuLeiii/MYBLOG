@@ -1,5 +1,8 @@
 //加密密码
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
+const jwt = require("jsonwebtoken");
 
 exports.hash = (myPassword) => {
   return new Promise((resolve, reject) => {
@@ -120,6 +123,13 @@ exports.manangeDataBoard = (blogs) => {
       }
     });
   return { blogsOf7 };
+};
+exports.sign = (username) => {
+  const privateKey = fs.readFileSync(
+    path.join(__dirname, "../keys/rsa_private_key.pem")
+  );
+  const token = jwt.sign({ username }, privateKey, { algorithm: "RS256" });
+  return token;
 };
 
 //根据返回的全部一二级评论，和所有指纹信息,去生成对应的数据结构，

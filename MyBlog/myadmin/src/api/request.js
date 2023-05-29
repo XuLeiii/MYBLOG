@@ -23,14 +23,9 @@ requests.interceptors.request.use(
 // 响应拦截器
 requests.interceptors.response.use(
   (res) => {
-    // 进度条结束
-    // nprogress.done();
-    // console.log("res.data", res.data);
-    return res
+    return res;
   },
   (err) => {
-    // nprogress.done();
-    //console.log('response:',err)
     // 1.判断请求超时
     if (err.code === "ECONNABORTED" && err.message.indexOf("timeout") !== -1) {
       return Promise.reject("timeout请求超时");

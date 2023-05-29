@@ -20,7 +20,12 @@
       <div class="card-head">
         <i class="el-icon-medal" style="margin-right: 10px"></i>最新博客
       </div>
-      <div class="card-item" v-for="item in blogList" :key="item._id">
+      <div
+        class="card-item"
+        v-for="item in blogList"
+        :key="item._id"
+        @click="showdetail('blog', item._id)"
+      >
         <span>{{ item.title }}</span> <span>{{ item.date }}</span>
       </div>
       <!-- <el-empty description="你猜为什么没有？" :image-size="50"></el-empty> -->
@@ -47,6 +52,7 @@ export default {
       blogsOfClassify: [],
       searchs: [],
       classifyList: [],
+      blogList: [],
     };
   },
   computed: {
@@ -69,6 +75,8 @@ export default {
             this.classifyList = res.data.classifies || [];
             if (res.data.blogs.length > 0)
               this.blogList = res.data.blogs.slice(0, 3);
+            console.log("blogList", this.blogList);
+
             this.$store.commit("SAVECLASSIFIES", this.classifies);
             this.$store.commit("SAVEBLOG", res.data.blogs);
             console.log("123123", this.classifyList);
@@ -86,6 +94,11 @@ export default {
       this.$router.push({
         path: "/list/blog?classification=" + item.title,
       });
+    },
+    //获取博客的详细信息
+    showdetail(type, _id) {
+      console.log({ type, _id });
+      this.$router.push(`/article/${type}/${_id}`);
     },
   },
   mounted() {

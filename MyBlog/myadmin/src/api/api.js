@@ -3,11 +3,10 @@
 import requests from "./request";
 
 //登录用户
-export const login = (data) => {
-  requests.post("/users/login", data);
-  //测试vuex到api请求是否畅通
-  // console.log("data",data);
-};
+export const login = (data) => requests.post("/users/login", data);
+//测试vuex到api请求是否畅通
+// console.log("data",data);
+
 //注册用户
 export const register = (data) => requests.post("/users/register", data);
 //测试从login.vue组件到此是否畅通
@@ -54,3 +53,13 @@ export const uploadImg = (data) =>
 
 export const getDataForDataBoard = () =>
   requests.get("/synthesis/getdatafordataboard");
+
+// 获取所有评论
+export const getComments = () => requests.get("/comments/getcomments");
+
+// 删除一级评论
+export const deleteFirstComment = (params) =>
+  requests.delete("/comments/deletefirstcomment", { params });
+// 删除二级评论
+export const deleteSecondComment = (params) =>
+  requests.delete("/comments/deletesecondcomment", { params });

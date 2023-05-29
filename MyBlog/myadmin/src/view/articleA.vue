@@ -10,25 +10,26 @@
             ><!-- 1.博客列表下扩展的属性2.scope.row变量是当前行的数据,对象的键值对格式，数据来源于表单的blogsData3.type="expand"列的类型是可展开的4.slot-scope="scope"中的scope是-->
             <template slot-scope="scope">
               <el-form label-position="left" class="table-expand">
-                <el-form-item label="提交日期" style="margin: 0px 0px 0px 60px">
+                <el-form-item
+                  label="提交日期:"
+                  style="margin: 0px 0px 0px 60px"
+                >
                   {{ scope.row.date }}
                 </el-form-item>
-                <el-form-item label="标题" style="margin: 0px 0px 0px 60px">
+                <el-form-item label="标题:" style="margin: 0px 0px 0px 60px">
                   {{ scope.row.title }}
                 </el-form-item>
-                <el-form-item label="专栏" style="margin: 0px 0px 0px 60px">
+                <el-form-item label="专栏:" style="margin: 0px 0px 0px 60px">
                   {{ scope.row.classification }}
                 </el-form-item>
-                <el-form-item label="简介" style="margin: 0px 0px 0px 60px">
+                <el-form-item label="简介:" style="margin: 0px 0px 0px 60px">
                   {{ scope.row.digest }}
                 </el-form-item>
-                <el-form-item label="状态" style="margin: 0px 0px 0px 60px">
-                  {{ scope.row.state ? "已发布" : "未发布" }}
-                </el-form-item>
-                <el-form-item label="点赞量" style="margin: 0px 0px 0px 60px">
+
+                <el-form-item label="点赞量:" style="margin: 0px 0px 0px 60px">
                   {{ scope.row.favour.length }}
                 </el-form-item>
-                <el-form-item label="浏览量" style="margin: 0px 0px 0px 60px">
+                <el-form-item label="浏览量:" style="margin: 0px 0px 0px 60px">
                   {{ scope.row.browse }}
                 </el-form-item>
               </el-form>
@@ -45,11 +46,7 @@
           </el-table-column>
           <el-table-column prop="classification" label="专栏" min-width="80">
           </el-table-column>
-          <el-table-column label="状态" min-width="50">
-            <template slot-scope="scope">
-              {{ scope.row.state ? "已发布" : "未发布" }}
-            </template>
-          </el-table-column>
+
           <!-- <el-table-column prop="favour.length" label="点赞量" min-width="40"> </el-table-column> -->
           <!-- <el-table-column prop="browse" label="浏览量" min-width="40"> </el-table-column> -->
           <el-table-column label="操作" min-width="120">
@@ -57,12 +54,12 @@
               <el-button size="mini" @click="Edit(scope.row, 'blog')"
                 >编辑</el-button
               >
-              <el-button
+              <!-- <el-button
                 size="mini"
                 type="success"
                 @click="changeState(scope.row, 'blog')"
                 >{{ scope.row.state ? "下架" : "发布" }}</el-button
-              >
+              > -->
               <el-button
                 size="mini"
                 type="danger"
@@ -112,15 +109,13 @@
           :data="comments"
           row-key="_id"
           :tree-props="{ children: 'children' }"
-          height="100%"
         >
           <el-table-column label="评论日期">
             <template slot-scope="scope">
-              <i class="el-icon-time"></i>
               <span style="margin-left: 10px">{{ scope.row.date }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="articleTitle" label="所属文章" min-width="100">
+          <el-table-column prop="reply" label="评论内容" min-width="100">
           </el-table-column>
           <el-table-column prop="username" label="评论者"> </el-table-column>
           <el-table-column label="操作">
@@ -162,6 +157,11 @@
 
 <script>
 import { mapGetters } from "vuex";
+import {
+  getComments,
+  deleteFirstComment,
+  deleteSecondComment,
+} from "../api/api.js";
 export default {
   data() {
     return {
@@ -235,7 +235,6 @@ export default {
     //获取文章列表
     async getBlogs() {
       await this.$store.dispatch("getBlogs"); //获取文章列表
-
     },
     //增，改，查，专栏和博客的内容
     async submit(formName) {
@@ -283,18 +282,18 @@ export default {
           res = await this.$store.dispatch("deleteClassify", { _id: row._id });
           this.$store.dispatch("getClassifies");
           break;
-        // case "comment":
-        //   console.log("r", row);
-        //   if (row.keyId) {
-        //     res = await deleteFirstComment({ _id: row._id });
-        //   } else {
-        //     res = await deleteSecondComment({
-        //       _id: row.fatherId,
-        //       replyId: row._id,
-        //     });
-        //   }
-        //   const result = await getComments();
-        //   this.comments = result.data;
+        case "comment":
+          console.log("r", row);
+          if (row.keyId) {
+            res = await deleteFirstComment({ _id: row._id });
+          } else {
+            res = await deleteSecondComment({
+              _id: row.fatherId,
+              replyId: row._id,
+            });
+          }
+          const result = await getComments();
+          this.comments = result.data;
       }
       if (res.status === 200) {
         this.$message.success(res.data.msg);
@@ -317,16 +316,16 @@ export default {
     async changeTab(tab) {
       this.currentTab = tab.index;
       console.log("currentTab", this.currentTab);
-      if(this.currentTab == 0){
+      if (this.currentTab == 0) {
         console.log("更新博客列表");
-        this.$store.dispatch("getBlogs")
-      }
-      else if (this.currentTab == 1) {
+        this.$store.dispatch("getBlogs");
+      } else if (this.currentTab == 1) {
         this.$store.dispatch("getClassifies");
       } else if (this.currentTab == 2) {
         const res = await getComments();
         if (res.status == 200) {
-          this.comments = res.data;
+          this.comments = res.data.data;
+          console.log(" this.commentsss", this.comments);
         }
       }
     },

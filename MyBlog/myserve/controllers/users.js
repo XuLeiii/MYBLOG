@@ -2,7 +2,7 @@
 const UserModel = require("../model/users");
 //2.引入工具类？有啥用？
 //hash方法用来加密前端传来的密码
-const { hash, compare } = require("../utils");
+const { hash, compare, sign } = require("../utils");
 
 //1.登录操作
 const login = async (req, res, next) => {
@@ -15,9 +15,11 @@ const login = async (req, res, next) => {
     let { password: hash } = user;
     let compareResult = await compare(password, hash);
     if (compareResult) {
+      const token = sign(email);
       res.send({
         msg: "登录成功",
         status: 200,
+        data: { token: token },
       });
     } else {
       res.send({
@@ -31,7 +33,6 @@ const login = async (req, res, next) => {
       status: 0,
     });
   }
-
 };
 
 //2.注册操作

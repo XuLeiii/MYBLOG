@@ -2,7 +2,9 @@
   <div class="blog">
     <div class="blog-top">
       <h3>{{ article.title }}</h3>
-      <div class="tag">专栏:{{ article.classification }}</div>
+      <div class="tag">
+        <el-tag type="success">{{ article.classification }}</el-tag>
+      </div>
       <!-- <div class="tag">简要:{{this.article.digest}}</div> -->
 
       <div class="footer">
@@ -12,14 +14,23 @@
             @click="giveALike(article._id)"
             :class="isGiveALiked ? 'active' : ''"
             style="cursor: pointer"
-            >{{ favourList }}</i
+            >{{ favourList.length }}</i
           >
-          <i class="el-icon-view">{{article.browse}}</i>
+          <i class="el-icon-view">{{ article.browse }}</i>
         </div>
         <i class="el-icon-date"> 写于{{ this.article.date }}</i>
       </div>
     </div>
-    <div class="blog-bottom">{{ this.article.content }}</div>
+    <mavon-editor
+      v-model="this.article.content"
+      ref="md"
+      :toolbarsFlag="false"
+      :subfield="false"
+      defaultOpen="preview"
+      :ishljs="true"
+      codeStyle="rainbow"
+      class="markdown"
+    />
     <CommentM style="margin-top: 1px" :keyId="$route.query.id"></CommentM>
   </div>
 </template>
@@ -27,7 +38,8 @@
 <script>
 import CommentM from "../components/CommentM.vue";
 import { getBlog, giveBlogALike, addBlogBrowse } from "../api/api.js";
-
+import { mavonEditor } from "mavon-editor";
+import "mavon-editor/dist/css/index.css";
 export default {
   data() {
     return {
@@ -36,25 +48,25 @@ export default {
       isGiveALiked: false,
     };
   },
-  components: { CommentM },
+  components: { CommentM, mavonEditor },
   methods: {
     // 获取文章详细信息
     async getArticle() {
       try {
-        let id = this.$route.query.id;
-        console.log("this.$route.query", this.$route.query);
+        console.log("this.$route.params.id", this.$route.params.id);
+
+        let id = this.$route.params.id;
         let res = {};
         this.favourList = [];
         //发送请求
         addBlogBrowse({ _id: id });
-        console.log("this.$api", this.$api);
         res = await getBlog({ _id: id });
         if (res.status === 200) {
           this.article = res.data;
           this.favourList = res.data.favour;
           console.log(" this.article", this.article);
-          // const murmur = localStorage.getItem("browserId");
-          // this.isGiveALiked = this.favourList.includes(murmur) ? true : false;
+          const murmur = localStorage.getItem("browserId");
+          this.isGiveALiked = this.favourList.includes(murmur) ? true : false;
         } else {
           this.$message.error("网络出错了,(ノへ￣、)！");
         }
@@ -66,6 +78,8 @@ export default {
     // 点赞
     async giveALike(id) {
       try {
+        let murmur = localStorage.getItem("browserId");
+
         if (this.isGiveALiked) {
           this.$message.warning("您已经点过赞啦！");
           return;
@@ -73,6 +87,7 @@ export default {
         let res = {};
         res = await giveBlogALike({
           _id: id,
+          favourMurmur: murmur,
         });
         if (res.status === 200) {
           this.favourList = res.data;
@@ -90,6 +105,14 @@ export default {
   created() {
     this.getArticle();
   },
+  watch: {
+    $route() {
+      if (this.$route.params.id) {
+        // console.log("this.$route.params.id", this.$route.params.id);
+        this.getArticle();
+      }
+    },
+  },
 };
 </script>
 
@@ -99,7 +122,7 @@ export default {
 }
 .blog-top {
   padding: 10px;
-  height: 150px;
+  height: 160px;
   background-color: #fff;
   border-radius: 10px;
   h3 {
@@ -122,10 +145,8 @@ export default {
     }
   }
 }
-.blog-bottom {
-  padding: 10px 10px 10px 15px;
-  margin-top: 10px;
-  background-color: #fff;
-  border-radius: 10px;
+.markdown {
+  margin: 10px 0px 0px 0px;
+  z-index: 0;
 }
 </style>

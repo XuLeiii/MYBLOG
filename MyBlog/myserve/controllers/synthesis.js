@@ -9,16 +9,12 @@ const fs = require("fs");
 // 获取总文章数
 const getWebInfo = async (req, res, next) => {
   const blogNums = await BlogsModel.getblogSums();
-  const jottingNums = await JottingModel.getJottingSums();
-  const tagNums = await TagModel.getTagSums();
   const classifyNums = await ClassifyModel.getClassifySums();
   res.send({
     msg: "查询文章总数成功",
     status: 200,
     data: {
       blogNums,
-      jottingNums,
-      tagNums,
       classifyNums,
     },
   });
@@ -50,26 +46,22 @@ const getSliderInfo = async (req, res, next) => {
 // 搜索文章(关键字搜索)
 const searchArticle = async (req, res) => {
   let { searchValue } = req.query;
+  console.log("req.query;", req.query);
   //搜索出来的博客，遍历出来，
   let blogs = await BlogsModel.searchBlogs(searchValue);
+  console.log("blogs", blogs);
   blogs.forEach((item) => {
     item.date = util.formatDate(item.date);
     item.type = "blog";
   });
-  //搜索便签
-  let jottings = await JottingModel.searchJottings(searchValue);
-  jottings.forEach((item) => {
-    item.date = util.formatDate(item.date);
-    item.type = "jotting";
-  });
   //搜索出的数据整合出来，再返回到前端界面
-  let data = [...blogs, ...jottings];
+  let data = [...blogs];
   if (data.length > 0) {
     res.send({
       msg: "搜索到文章",
       status: 200,
       data: {
-        dataList: [...blogs, ...jottings],
+        dataList: [...blogs],
       },
     });
   } else {

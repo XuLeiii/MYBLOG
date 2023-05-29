@@ -17,10 +17,13 @@
       <el-avatar class="avatar" :src="AVATAR" :size="50"></el-avatar>
       <div class="my-name">白开水很烫</div>
       <div class="info-detail">
-        <div>博客<span>0</span></div>
-        <div>心情<span>0</span></div>
-        <div>专栏<span>0</span></div>
-        <div>标签<span>0</span></div>
+        <div>
+          博客数量<span>{{ webInfo.blogNums || 0 }}</span>
+        </div>
+        <div>
+          专栏数量<span>{{ webInfo.classifyNums || 0 }}</span>
+        </div>
+        <!-- <div>心情<span>🤣</span></div> -->
       </div>
     </el-card>
     <!-- 底部小字 -->
@@ -33,12 +36,26 @@ import AVATAR from "../assets/img/avatar.jpg";
 import slideBgUrl1 from "../assets/img/slideBg/slidebg1.jpg";
 import slideBgUrl3 from "../assets/img/slideBg/slidebg2.jpg";
 import slideBgUrl4 from "../assets/img/slideBg/slidebg3.jpg";
+import { getWebInfo } from "../api/api.js";
 export default {
   data() {
     return {
       AVATAR,
       slideBg: [slideBgUrl1, slideBgUrl3, slideBgUrl4],
+      webInfo: {},
     };
+  },
+  async mounted() {
+    try {
+      const res = await getWebInfo();
+      if (res.status === 200) {
+        this.webInfo = res.data;
+      } else {
+        this.$message.error("网络出错了,(ノへ￣、)！");
+      }
+    } catch (err) {
+      this.$message.error(err);
+    }
   },
 };
 </script>

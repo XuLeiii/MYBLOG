@@ -5,11 +5,15 @@ const BlogSchema = new mongoose.Schema({
   title: { type: String, require: true },
   // ????????????????????????????????????????????????
   classification: { type: String, require: true }, //所属专栏
-  favour: { type: Number, default: 0 }, //点赞数量
+  favour: [
+    {
+      type: String,
+    },
+  ], //点赞数量
   browse: { type: Number, default: 0 },
   content: { type: String, require: true },
   digest: { type: String }, // 描述信息
-  state: { type: Boolean, default: false }, // 状态：是否发布
+  state: { type: Boolean, default: true }, // 状态：是否发布
 });
 const BlogModel = mongoose.model("blogs", BlogSchema);
 //新增博客
@@ -61,8 +65,8 @@ const getBlog = (id) => {
   return BlogModel.findById(id).lean();
 };
 //增加点赞的数量
-const addFavour = (id, num) => {
-  return BlogModel.updateOne({ id }, { $inc: { favour: num } });
+const addFavour = (id, favourMurmur) => {
+  return BlogModel.updateOne({ id }, { $push: { favour: favourMurmur } });
 };
 // 获取点赞数
 const getFavour = (_id) => {
@@ -76,6 +80,12 @@ const addBlogBrowse = (_id) => {
 const getBlogsOfClassify = (classification) => {
   return BlogModel.find({ classification, state: true }).lean();
 };
+const searchBlogs = (searchValue) => {
+  let regexp = new RegExp(searchValue, "i");
+  return BlogModel.find({
+    $or: [{ title: { $regex: regexp } }],
+  }).lean();
+};
 module.exports = {
   addblog,
   getBlogs,
@@ -88,4 +98,5 @@ module.exports = {
   getFavour,
   addBlogBrowse,
   getBlogsOfClassify,
+  searchBlogs,
 };

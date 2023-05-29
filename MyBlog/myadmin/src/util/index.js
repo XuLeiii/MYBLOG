@@ -79,3 +79,13 @@ export const toBolb = (basestr, type) => {
   }
   return blob;
 };
+
+export const setToken = (token) => {
+  sessionStorage.setItem("TOKEN", JSON.stringify(token));
+};
+export const getToken = () => {
+  return JSON.parse(sessionStorage.getItem("TOKEN"));
+};
+// export const setUserInfo = (user) => {
+//   sessionStorage.setItem("userInfo", JSON.stringify(user));
+// };

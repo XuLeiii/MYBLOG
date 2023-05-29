@@ -22,6 +22,20 @@
         <i class="el-icon-user"></i>
         <span slot="title">关于</span>
       </el-menu-item>
+      <div class="admin" style="padding: 20px; margin: 0px 0px 0px 5px">
+        <i class="el-icon-user" style="font-size: 18px"></i>
+        <a
+          href="http://localhost:8080/"
+          target="_blank"
+          style="
+            text-decoration: none;
+            color: #303133;
+            font-size: 14px;
+            margin: 0px 0px 0px 5px;
+          "
+          >管理员登录</a
+        >
+      </div>
     </el-menu>
   </div>
 </template>
@@ -49,6 +63,8 @@ export default {
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
     height: 350px;
+  }
+  .admin {
   }
 }
 </style>

@@ -1,22 +1,27 @@
 <template>
   <div class="nav-box">
-    <el-menu router :default-active="$route.path" background-color="#545c64" text-color="#fff">
-      <el-menu-item  index="/home/article">
-        <i class="el-icon-menu" ></i>
-        <span slot="title">文章管理</span>
+    <el-menu
+      router
+      :default-active="$route.path"
+      background-color="#545c64"
+      text-color="#fff"
+    >
+      <el-menu-item index="/home/article">
+        <i class="el-icon-menu"></i>
+        <span slot="title">博客管理</span>
       </el-menu-item>
-      <el-menu-item index="/home/editE" >
+      <el-menu-item index="/home/editE">
         <i class="el-icon-setting"></i>
-        <span slot="title">编辑文章</span>
+        <span slot="title">编辑博客</span>
       </el-menu-item>
       <el-menu-item index="/home/photoEdit">
         <i class="el-icon-setting"></i>
         <span slot="title">照片管理</span>
       </el-menu-item>
-      <el-menu-item index="/home/dataBorder">
+      <!-- <el-menu-item index="/home/dataBorder">
         <i class="el-icon-setting"></i>
         <span slot="title">数据看板</span>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-menu>
   </div>
 </template>

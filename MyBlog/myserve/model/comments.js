@@ -9,7 +9,7 @@ const CommentSchema = new mongoose.Schema({
 			type: String,
 		},
 	],
-	content: { type: String, default: '' },
+	reply: { type: String, default: '' },
 	murmur: { type: String, require: true },
 	replyInfo: [
 		{
